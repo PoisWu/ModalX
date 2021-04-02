@@ -1,0 +1,14 @@
+{
+    "configurations": [
+        {
+            "name": "Linux",
+            "includePath": [
+                "${workspaceFolder}/**"
+            ],
+            "defines": ["_GNU_SOURCE"],
+            "compilerPath": "/usr/bin/clang",
+            "intelliSenseMode": "clang-x64"
+        }
+    ],
+    "version": 4
+}

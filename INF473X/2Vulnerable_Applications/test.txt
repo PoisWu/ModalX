@@ -1,0 +1,16 @@
+
+
+If we take a look at the stack organization from our fonction:
+Using only 3 and the organisation of my stack:
+/*Memory Stack
+|--------------------------------------|-----------------------------------------------------|----------------------------|
+    buffer                                greeting_text
+|                  256                 |     128                                             |                            |
+*/
+
+We are going to exploit it using the injection of a shell code as in https://www.youtube.com/watch?v=1S0aBV-Waeo&t=1s usign the fact that we are copying buf (256) into our greeting_text
+
+
+
+Computerphile Shell Code:
+
