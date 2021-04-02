@@ -79,6 +79,7 @@ void* thread_send(void* arg){
         char* msg=malloc(UNIT_LENGTH);
         int rest=UNIT_LENGTH;
         int msglen=0;
+        
         for (;;) {
             char buffer[1024];
             if (fgets(buffer, sizeof(buffer), stdin) == NULL) {
