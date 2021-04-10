@@ -8,7 +8,7 @@
 
 # Here is a simple Make Macro.
 
-LINK_TARGET = pcap_example test2
+LINK_TARGET = pcap_example #test2
 
 # Here is a Make Macro that uses the backslash to extend to multiple lines.
 # This allows quick modification of more object files.
@@ -56,8 +56,8 @@ clean:
 pcap_example : pcap_example.o header.o
 	gcc -g3  -o  $@ $^ -lpcap
 	
-test2 : test2.o
-	gcc -g3  -o  $@ $^ -lpcap
+# test2 : test2.o
+# 	gcc -g3  -o  $@ $^ -lpcap
 
 # Here is a Pattern Rule, often used for compile-line.
 # It says how to create a file with a .o suffix, given a file with a .c suffix.
