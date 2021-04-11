@@ -71,7 +71,7 @@ int main(int argc, char *argv[])
 	if(ret < 0)
 	{
 		fprintf(stderr, "Error looking up net: %s \n", dev_name);
-		exit(1);
+		exit(1);		
 	}
 
 	struct sockaddr_in addr;
