@@ -30,7 +30,8 @@ void print_ip_header(const u_char * Buffer, int Size)
 
     unsigned short iphdrlen;
 
-    struct iphdr *iph = (struct iphdr *)(Buffer  + sizeof(struct ethhdr) );
+    // struct iphdr *iph = (struct iphdr *)(Buffer  + sizeof(struct ethhdr) );
+    struct iphdr *iph = (struct iphdr *)Buffer;
     iphdrlen =iph->ihl*4;
 
     memset(&source, 0, sizeof(source));
@@ -242,6 +243,7 @@ void PrintData (const u_char * data , int Size)
 }
 
 unsigned short checksum(unsigned short *ptr,int nbytes)
+    //sum of header 
 {
     register long sum;
     unsigned short oddbyte;

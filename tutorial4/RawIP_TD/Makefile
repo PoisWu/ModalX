@@ -22,6 +22,7 @@ OBJS = \
 
 REBUILDABLES = $(OBJS) $(LINK_TARGET)
 
+
 # There are two standard Targets your Makefile should probably have:
 # "all" and "clean", because they are often command-line Goals.
 # Also, these are both typically Artificial Targets, because they don't typically
@@ -31,6 +32,10 @@ REBUILDABLES = $(OBJS) $(LINK_TARGET)
 # It does this by expressing a dependency on the results of that system,
 # which in turn have their own rules and dependencies.
 all : $(LINK_TARGET)
+
+
+
+	
 
 # Make Macros do not need to be defined before their Macro Expansions,
 # but they normally should be defined before they appear in any Rules.
@@ -71,4 +76,3 @@ $(LINK_TARGET) : $(OBJS)
 # (in this case, by the Pattern Rule above).
 # Dependency Rules are often used to capture header file dependencies.
 
- 

@@ -130,6 +130,7 @@ struct iphdr
     u_int16_t check;
     u_int32_t saddr;
     u_int32_t daddr;
+
     /*The options start here. */
   };
 
