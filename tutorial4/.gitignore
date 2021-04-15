@@ -1,2 +1,4 @@
 pcap_tutorial
 .vscode
+log.txt
+*.o

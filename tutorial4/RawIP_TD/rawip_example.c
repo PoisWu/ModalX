@@ -4,8 +4,8 @@
  *  Created on: May 4, 2016
  *      Author: jiaziyi
  */
-
-
+// ref https://www.opensourceforu.com/2015/03/a-guide-to-using-raw-sockets/
+// ref https://www.binarytides.com/raw-sockets-c-code-linux/
 #include<stdio.h>
 #include<string.h>
 #include<sys/socket.h>
@@ -20,7 +20,7 @@
 
 #define DEST_IP "127.0.0.1"
 //#define DEST_IP "129.104.89.108" //set your destination ip here
-#define DEST_PORT 5555 //set the destination port here
+#define DEST_PORT 40000 //set the destination port here
 #define TEST_STRING "test data" //a test string as packet payload
 
 int main(int argc, char *argv[])
@@ -68,11 +68,39 @@ int main(int argc, char *argv[])
 	iph->frag_off=0;
 	iph->ttl=255;
 	iph->protocol=17; // udp service https://www.iana.org/assignments/protocol-numbers/protocol-numbers.xhtml
-	
+	iph->check=0;
 	iph->saddr=inet_addr(source_ip);
 	iph->daddr=inet_addr(dest_ip);
 	iph->check=checksum((unsigned short *) packet, iph->tot_len);
 
+	
+	
+	//fill the UDP header
+	
+	udph->source=htons(SRC_PORT);
+	udph->dest=htons(DEST_PORT);
+	udph->len=htons(sizeof(struct udphdr)+strlen(data_string));
+	udph->check=0;
+	
+	//fill the UDP pseudo header
+	psh.source_address=iph->saddr;
+	psh.dest_address=iph->daddr;
+	psh.protocol=IPPROTO_UDP;
+	psh.udp_length=udph->len;
+	psh.placeholder=0;
+
+	int psize=sizeof(struct pseudo_udp_header) + sizeof(struct udphdr)+strlen(data_string);
+	char *pseudogram=malloc(psize);
+	memcpy(pseudogram, (char *)&psh,sizeof(struct pseudo_udp_header));
+	memcpy(pseudogram+sizeof(struct pseudo_udp_header),udph,sizeof(struct udphdr)+strlen(data_string));
+
+
+
+	udph->check=checksum((unsigned short *) pseudogram,psize);
+
+	
+	
+	//-----------------------
 	fprintf(stdout , "\n");
     fprintf(stdout , "IP Header\n");
     fprintf(stdout , "   |-IP Version        : %d\n",(unsigned int)iph->version);
@@ -86,18 +114,13 @@ int main(int argc, char *argv[])
     fprintf(stdout , "   |-TTL      : %d\n",(unsigned int)iph->ttl);
     fprintf(stdout , "   |-Protocol : %d\n",(unsigned int)iph->protocol);
     fprintf(stdout , "   |-Checksum : %d\n",ntohs(iph->check));
+	
 	struct in_addr s;
 	s.s_addr= iph->saddr;
     fprintf(stdout , "   |-Source IP        : %s\n" , inet_ntoa(s) );
 	struct in_addr d;
 	d.s_addr= iph->daddr;
     fprintf(stdout , "   |-Destination IP   : %s\n" , inet_ntoa(d) );
-	//fill the UDP header
-	
-	udph->source=htons(SRC_PORT);
-	udph->dest=htons(DEST_PORT);
-	udph->len=htons(sizeof(struct udphdr)+strlen(data_string));
-	udph->check=0;
 
     fprintf(stdout , "\nUDP Header\n");
     fprintf(stdout , "   |-Source Port      : %d\n" , ntohs(udph->source));
@@ -105,15 +128,16 @@ int main(int argc, char *argv[])
     fprintf(stdout , "   |-UDP Length       : %d\n" , ntohs(udph->len));
     fprintf(stdout , "   |-UDP Checksum     : %d\n" , ntohs(udph->check));
 	
-	//fill the UDP pseudo header
-	psh.source_address=iph->saddr;
-	psh.dest_address=iph->daddr;
-	psh.protocol=17;
-	psh.udp_length=udph->len;
-	psh.placeholder=0;
-	
-	//send the packet
 
+	//----------------------------
+
+	//send the packet
+	int one =1;
+	const int *val=&one;
+	if(setsockopt(fd,IPPROTO_IP,IP_HDRINCL,val,sizeof(one))<0){
+		perror("Error setting IP_HDRINCL");
+		exit(0);
+	}
 
     struct sockaddr_in *to=malloc(sizeof(struct sockaddr_in));
     memset(to,0,sizeof(struct sockaddr_in));
