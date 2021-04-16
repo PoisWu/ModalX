@@ -31,14 +31,15 @@ int main(int argc, char *argv[])
 
 	int fd = socket(AF_INET, SOCK_RAW, IPPROTO_RAW);
 	
-    int hincl = 0;                  /* 1 = on, 0 = off */
+    int hincl =1 ;                  /* 1 = on, 0 = off */
     setsockopt(fd, IPPROTO_IP, IP_HDRINCL, &hincl, sizeof(hincl));
 
-	if(fd < 0)
-	{
+	if(fd < 0){
 		perror("Error creating raw socket ");
 		exit(1);
 	}
+
+	// printf("fd=%d",fd);
 
 
 
@@ -63,16 +64,18 @@ int main(int argc, char *argv[])
 	iph->version=4;
 	iph->ihl=5;
 	iph->tos= 0; 
-	iph->tot_len=htons(sizeof(struct iphdr)+sizeof(struct udphdr)+strlen(data_string));     
-	iph->id=0;
+	iph->tot_len=sizeof(struct iphdr)+sizeof(struct udphdr)+strlen(data_string);    
+
+	iph->id=htons(1);
 	iph->frag_off=0;
 	iph->ttl=255;
-	iph->protocol=17; // udp service https://www.iana.org/assignments/protocol-numbers/protocol-numbers.xhtml
+	iph->protocol=IPPROTO_UDP; // udp service https://www.iana.org/assignments/protocol-numbers/protocol-numbers.xhtml
 	iph->check=0;
 	iph->saddr=inet_addr(source_ip);
 	iph->daddr=inet_addr(dest_ip);
-	iph->check=checksum((unsigned short *) packet, iph->tot_len);
+	iph->check=checksum((unsigned short *)iph, sizeof(struct iphdr));
 
+	
 	
 	
 	//fill the UDP header
@@ -98,7 +101,7 @@ int main(int argc, char *argv[])
 
 	udph->check=checksum((unsigned short *) pseudogram,psize);
 
-	
+
 	
 	//-----------------------
 	fprintf(stdout , "\n");
@@ -106,7 +109,7 @@ int main(int argc, char *argv[])
     fprintf(stdout , "   |-IP Version        : %d\n",(unsigned int)iph->version);
     fprintf(stdout , "   |-IP Header Length  : %d DWORDS or %d Bytes\n",(unsigned int)iph->ihl,((unsigned int)(iph->ihl))*4);
     fprintf(stdout , "   |-Type Of Service   : %d\n",(unsigned int)iph->tos);
-    fprintf(stdout , "   |-IP Total Length   : %d  Bytes(Size of Packet)\n",ntohs(iph->tot_len));
+    fprintf(stdout , "   |-IP Total Length   : %d  Bytes(Size of Packet)\n",iph->tot_len);
     fprintf(stdout , "   |-Identification    : %d\n",ntohs(iph->id));
     //fprintf(stdout , "   |-Reserved ZERO Field   : %d\n",(unsigned int)iphdr->ip_reserved_zero);
     //fprintf(stdout , "   |-Dont Fragment Field   : %d\n",(unsigned int)iphdr->ip_dont_fragment);
@@ -141,8 +144,9 @@ int main(int argc, char *argv[])
 	to->sin_addr.s_addr=iph->daddr;
    
     int nb_byte_sent = sendto(fd,packet,iph->tot_len,0,(const struct sockaddr *)to,sizeof(struct sockaddr_in));
+
     if(nb_byte_sent<0){
-		fprintf(stderr,"fail send\n");
+		fprintf(stderr,"fail send  %d\n",nb_byte_sent);
 	}
 
 
