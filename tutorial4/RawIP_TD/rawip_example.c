@@ -132,12 +132,7 @@ int main(int argc, char *argv[])
 	//----------------------------
 
 	//send the packet
-	int one =1;
-	const int *val=&one;
-	if(setsockopt(fd,IPPROTO_IP,IP_HDRINCL,val,sizeof(one))<0){
-		perror("Error setting IP_HDRINCL");
-		exit(0);
-	}
+	
 
     struct sockaddr_in *to=malloc(sizeof(struct sockaddr_in));
     memset(to,0,sizeof(struct sockaddr_in));
