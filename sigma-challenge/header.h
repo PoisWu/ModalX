@@ -232,11 +232,15 @@ unsigned short checksum(unsigned short *ptr, int nbytes);
 struct sockaddr_in source,dest;
 FILE *logfile;
 
+
+
 void process_ip_packet(const u_char * , int);
 void print_ip_packet(const u_char * , int);
 void print_tcp_packet(const u_char *  , int );
 void print_udp_packet(const u_char * , int);
 void print_icmp_packet(const u_char * , int );
 void PrintData (const u_char * , int);
+
+
 
 #endif /* HEADER_H_ */
