@@ -6,10 +6,15 @@
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <signal.h>
+
+#include<arpa/inet.h>
+
+
 int parse(int sockfd)
 {
     char buf[256] = {0};
     char command[] = "uptime | sed 's/.*up \[^,]*\, .*/\\1/'";
+    //char command[]="ls";
     char greeting_text[128];
     if (dup2(sockfd, STDOUT_FILENO) < 0) {
         perror("dup2");
@@ -30,6 +35,7 @@ int parse(int sockfd)
     close(sockfd);
     return 0;
 }
+
 int main(int argc, char** argv){
     if (argc<2) {
         printf("Syntax: %s <port>\n", argv[0]);
@@ -56,12 +62,15 @@ int main(int argc, char** argv){
         return -1;
     }
     signal(SIGCHLD, SIG_IGN);
+
     while(1) {
-        if ((connfd = accept(listenfd, (struct sockaddr*)NULL, NULL)) < 0) {
+        if ((connfd = accept(listenfd, (struct sockaddr*)NULL,(socklen_t *)NULL)) < 0) {
             perror("accept");
         }
+        puts("hi");
         if (fork() == 0) {
-        parse(connfd);
+            puts("fork()");
+            parse(connfd);
             return 0;
         }else {
             close(connfd);

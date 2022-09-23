@@ -215,7 +215,8 @@ void process_packet(u_char *args, const struct pcap_pkthdr *header, const u_char
 	uint8_t send_buf[BUF_SIZE]; //sending buffer
 	bzero(send_buf, BUF_SIZE);
 
-	/*****************Data************************///!!
+	/*****************Data************************/
+	//!!
   	uint8_t *dnsdata = send_buf + sizeof(struct iphdr) + sizeof(struct udphdr) +
   	                   sizeof(struct dns_header);
   	uint8_t *p = dnsdata;

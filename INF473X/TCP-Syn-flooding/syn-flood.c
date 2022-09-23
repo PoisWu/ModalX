@@ -21,7 +21,7 @@ Done in colab with Joaquin Castanon for the course INF473X
 
 #define DEST_IP "127.0.0.1" //set your destination ip here
 #define DEST_PORT 30000 //set the destination port here
-#define TEST_STRING "You are being flooded" //a test string as packet payload
+#define TEST_STRING "" //a test string as packet payload
 
 
 
@@ -159,7 +159,8 @@ int main(int argc, char *argv[]) {
 
 
     //Flood Initiating - we create a bunch of Sockets and fill them with different IP Packages
-    while(1){
+    int flood=0;
+    do{
         //Flood Step----------------------------------------------------------------------------
         int fd = socket(AF_INET, SOCK_RAW, IPPROTO_RAW);//Don`t know if we start the socket inside, maybe it`s worth it to create separate threads in order to have multiple sockets
         
@@ -192,6 +193,6 @@ int main(int argc, char *argv[]) {
         //---------------------------------------------------------------------------------------------------
         //To see what is really happening uncomment the ligne bellow :)
         //usleep(300000); //For debuguing purposes
-    }
+    }while(flood);
     return 0;
 }

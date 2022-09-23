@@ -9,6 +9,8 @@
 #include<arpa/inet.h>
 #include<stdio.h>
 #include<string.h>
+#include <stdio.h>
+#include <stdlib.h>
 
 #include "header.h"
 

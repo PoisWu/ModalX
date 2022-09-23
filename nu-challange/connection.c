@@ -99,23 +99,27 @@ int connection(int offset){
     
     
     write(sockfd, msg, sizeof(msg));
-    usleep(1000);
     puts("msg sent\n");
     pthread_t read_fd, write_fd;
     int read_ret;
     pthread_create(&write_fd,NULL,fd_write,(void *)&sockfd);
     pthread_create(&read_fd,NULL,fd_read,(void *)&sockfd);
     pthread_join(read_fd,NULL);
+    pthread_cancel(write_fd);
+    close(sockfd);
     puts("");
     return 0;
 }
 
+
+
 int main(){
-    connection(140);
-    // for(int offset = 118;offset<150;offset++){
-    //     printf("offset = %d\n",offset);
-    //     connection(offset);
-    //     sleep(1);
-    // }
+    // connection(140);
+    //128+8-12=124
+    for(int offset=124;offset<150;offset++){
+        printf("offset = %d\n",offset);
+        connection(offset);
+        sleep(1);
+    }
     return 0;
 }
